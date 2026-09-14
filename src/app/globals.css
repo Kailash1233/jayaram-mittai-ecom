@@ -1,0 +1,286 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 4 Curated Luxury Themes (All variations of the same dark hospitality standard) */
+
+:root,
+html[data-theme="white-violet"] {
+  --bg-main: #f9f6ef;
+  --bg-surface: #ffffff;
+  --bg-card: rgba(255, 255, 255, 0.94);
+  --bg-card-hover: #ffffff;
+  --border-theme: rgba(139, 92, 246, 0.22);
+  --border-theme-active: #7c3aed;
+  --accent-primary: #7c3aed;
+  --accent-secondary: #6d28d9;
+  --accent-badge-bg: rgba(139, 92, 246, 0.12);
+  --accent-badge-text: #6d28d9;
+  --text-main: #1f0a38;
+  --text-muted: #5e4a73;
+  --hero-glow-1: rgba(139, 92, 246, 0.12);
+  --hero-glow-2: rgba(245, 237, 220, 0.7);
+  --button-gradient: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  --button-text-color: #ffffff;
+  --dropdown-bg: #ffffff;
+  --dropdown-text: #1f0a38;
+}
+
+html[data-theme="cherry-noir"] {
+  --bg-main: #121013;
+  --bg-surface: #1a171c;
+  --bg-card: rgba(26, 22, 28, 0.82);
+  --bg-card-hover: rgba(36, 30, 39, 0.94);
+  --border-theme: rgba(225, 29, 72, 0.22);
+  --border-theme-active: #e11d48;
+  --accent-primary: #e11d48;
+  --accent-secondary: #fda4af;
+  --accent-badge-bg: rgba(225, 29, 72, 0.15);
+  --accent-badge-text: #fecdd3;
+  --text-main: #fcf6f7;
+  --text-muted: #b8acb1;
+  --hero-glow-1: rgba(190, 18, 60, 0.2);
+  --hero-glow-2: rgba(225, 29, 72, 0.08);
+  --button-gradient: linear-gradient(135deg, #e11d48 0%, #9f1239 100%);
+  --button-text-color: #ffffff;
+  --dropdown-bg: #1a171c;
+  --dropdown-text: #fcf6f7;
+}
+
+html[data-theme="noir-gold"] {
+  --bg-main: #0e0d0c;
+  --bg-surface: #151412;
+  --bg-card: rgba(22, 20, 18, 0.75);
+  --bg-card-hover: rgba(28, 25, 22, 0.9);
+  --border-theme: rgba(214, 173, 98, 0.2);
+  --border-theme-active: #d6ad62;
+  --accent-primary: #d6ad62;
+  --accent-secondary: #f1d394;
+  --accent-badge-bg: rgba(214, 173, 98, 0.15);
+  --accent-badge-text: #f1d394;
+  --text-main: #f7f3ec;
+  --text-muted: #b9b4ac;
+  --hero-glow-1: rgba(214, 173, 98, 0.14);
+  --hero-glow-2: rgba(255, 255, 255, 0.06);
+  --button-gradient: linear-gradient(135deg, #f1d394 0%, #d6ad62 100%);
+  --button-text-color: #17130b;
+  --dropdown-bg: #151412;
+  --dropdown-text: #f7f3ec;
+}
+
+html[data-theme="violet-pearl"] {
+  --bg-main: #0f0b14;
+  --bg-surface: #17121f;
+  --bg-card: rgba(24, 18, 32, 0.75);
+  --bg-card-hover: rgba(32, 24, 43, 0.9);
+  --border-theme: rgba(192, 132, 252, 0.22);
+  --border-theme-active: #c084fc;
+  --accent-primary: #c084fc;
+  --accent-secondary: #e9d5ff;
+  --accent-badge-bg: rgba(192, 132, 252, 0.15);
+  --accent-badge-text: #e9d5ff;
+  --text-main: #fbf8ff;
+  --text-muted: #b8adc5;
+  --hero-glow-1: rgba(192, 132, 252, 0.15);
+  --hero-glow-2: rgba(233, 213, 255, 0.06);
+  --button-gradient: linear-gradient(135deg, #e9d5ff 0%, #c084fc 100%);
+  --button-text-color: #150921;
+  --dropdown-bg: #17121f;
+  --dropdown-text: #fbf8ff;
+}
+
+
+/* Base Body Styles with Ambient Radial Depth Texture */
+html, body {
+  background-color: var(--bg-main) !important;
+  color: var(--text-main) !important;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: 'DM Sans', -apple-system, sans-serif;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Ambient Radial Depth Texture Layer */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  pointer-events: none;
+  background: radial-gradient(circle at 20% 20%, var(--hero-glow-1), transparent 32%),
+              radial-gradient(circle at 85% 45%, var(--hero-glow-2), transparent 28%);
+  filter: blur(40px);
+  z-index: -1;
+}
+
+/* Font Serif utilities */
+.font-serif {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* Glass & Card Utilities */
+.luxury-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-theme);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.luxury-card:hover {
+  background-color: var(--bg-card-hover);
+  border-color: var(--border-theme-active);
+}
+
+/* Form and Select Dropdown styling across all platforms and themes */
+input, textarea, select {
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+  border-color: var(--border-theme);
+}
+
+select option {
+  background-color: var(--dropdown-bg, #ffffff) !important;
+  color: var(--dropdown-text, #1e0836) !important;
+  padding: 8px 12px;
+}
+
+select option:hover,
+select option:focus,
+select option:active,
+select option:checked {
+  background-color: var(--accent-primary, #7c3aed) !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="white-violet"] {
+  color-scheme: light;
+}
+html[data-theme="white-violet"] input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: none;
+  opacity: 0.75;
+  cursor: pointer;
+}
+
+html[data-theme="cherry-noir"],
+html[data-theme="noir-gold"],
+html[data-theme="violet-pearl"] {
+  color-scheme: dark;
+}
+html[data-theme="cherry-noir"] input[type="date"]::-webkit-calendar-picker-indicator,
+html[data-theme="noir-gold"] input[type="date"]::-webkit-calendar-picker-indicator,
+html[data-theme="violet-pearl"] input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.85);
+  cursor: pointer;
+}
+
+.luxury-button-primary {
+  background: var(--button-gradient) !important;
+  color: var(--button-text-color) !important;
+  font-weight: 700;
+  border: 0;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.luxury-button-primary:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+}
+
+.luxury-button-primary:active {
+  transform: scale(0.98);
+}
+
+.luxury-button-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.luxury-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-theme);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary);
+}
+
+/* Print Styles */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-receipt, #printable-receipt * {
+    visibility: visible;
+  }
+  #printable-receipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 24px;
+    background: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* ─── HR Module: Dark Mode (class-based, independent of booking themes) ─── */
+html.dark {
+  color-scheme: dark;
+}
+
+/* ─── HR Module: Safe area inset for mobile bottom nav ─── */
+.safe-area-inset {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ─── HR Module: Slide-in animation for toasts ─── */
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-in {
+  animation: slideInFromRight 0.3s ease-out;
+}
+
+.slide-in-from-right-full {
+  animation: slideInFromRight 0.3s ease-out;
+}
+
+/* ─── HR Module: Touch manipulation for attendance buttons ─── */
+.touch-manipulation {
+  touch-action: manipulation;
+}
+

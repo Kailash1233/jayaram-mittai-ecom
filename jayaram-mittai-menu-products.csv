@@ -1,0 +1,204 @@
+category,item_name,price_inr,unit
+Tandoori Sides,Paneer Tikka,180,1 plate
+Tandoori Sides,Mushroom Tikka,160,1 plate
+Tandoori Sides,Gobi Tikka,120,1 plate
+Tandoori Sides,Hariyali Paneer Tikka,190,1 plate
+Tandoori Sides,Aloo Tandoori Tikka,90,1 plate
+Tandoori Sides,Veg Seekh Kebab,140,1 plate
+Tandoori Roti,Chapathi With Gravy,50,2 pcs
+Tandoori Roti,Plain Naan,40,1 pc
+Tandoori Roti,Butter Naan,50,1 pc
+Tandoori Roti,Garlic Naan,45,1 pc
+Tandoori Roti,Kulcha Paratha,50,1 pc
+Tandoori Roti,Tandoori Paratha,50,1 pc
+Tandoori Roti,Aloo Paratha,50,1 pc
+Tandoori Roti,Paneer Paratha,100,1 pc
+Tandoori Roti,Gobi Paratha,70,1 pc
+Tandoori Roti,Stuffed Paratha,80,1 pc
+Tandoori Roti,Chilli Paratha,90,1 pc
+Tandoori Roti,Plain Phulka,20,1 pc
+Tandoori Roti,Butter Phulka,25,1 pc
+Rice,Steamed Rice,60,1 plate
+Rice,Jayaram Special Fried Rice,140,1 plate
+Rice,Veg Fried Rice,110,1 plate
+Rice,Paneer Fried Rice,140,1 plate
+Rice,Gobi Fried Rice,120,1 plate
+Rice,Mushroom Fried Rice,120,1 plate
+Rice,Mix Vegetable Fried Rice,130,1 plate
+Rice,Shanghai Fried Rice,140,1 plate
+Rice,Veg Shanghai Fried Rice,120,1 plate
+Rice,Veg Schezwan Fried Rice,120,1 plate
+Rice,Paneer Schezwan Fried Rice,140,1 plate
+Rice,Hong Kong Fried Rice,140,1 plate
+Rice,Singapore Fried Rice,140,1 plate
+Rice,Jeera Rice,120,1 plate
+Rice,Ghee Rice,130,1 plate
+Noodles,Veg Noodles,100,1 plate
+Noodles,Mushroom Noodles,100,1 plate
+Noodles,Paneer Noodles,120,1 plate
+Noodles,Gobi Noodles,100,1 plate
+Noodles,Veg Schezwan Noodles,100,1 plate
+Noodles,Mushroom Schezwan Noodles,110,1 plate
+Noodles,Paneer Schezwan Noodles,130,1 plate
+Noodles,American Chopsey,100,1 plate
+Noodles,Gobi Schezwan Noodles,120,1 plate
+Biryani & Pulao,Veg Biryani,120,1 plate
+Biryani & Pulao,Paneer Biryani,150,1 plate
+Biryani & Pulao,Mushroom Biryani,130,1 plate
+Biryani & Pulao,Hyderabad Biryani,140,1 plate
+Biryani & Pulao,Jayaram Special Biryani,140,1 plate
+Biryani & Pulao,Veg Pulao,110,1 plate
+Biryani & Pulao,Paneer Pulao,140,1 plate
+Biryani & Pulao,Mushroom Pulao,120,1 plate
+Biryani & Pulao,Basmati Pulao,140,1 plate
+Biryani & Pulao,Kashmiri Pulao,150,1 plate
+Dhal Varieties,Dhal Fry,80,1 bowl
+Dhal Varieties,Dhal Tadka,90,1 bowl
+Dhal Varieties,Dhal Palak,90,1 bowl
+Raitha,Onion Raitha,50,1 bowl
+Raitha,Boondi Raitha,50,1 bowl
+Raitha,Pineapple Raitha,60,1 bowl
+Raitha,Mix Raitha,60,1 bowl
+Papad Items,Masala Papad,30,1 pc
+Papad Items,Roasted Papad,20,1 pc
+Soups,Jayaram Special Soup,80,1 bowl
+Soups,Veg Clear Soup,70,1 bowl
+Soups,Veg Hot And Sour Soup,80,1 bowl
+Soups,Mushroom Soup,80,1 bowl
+Soups,Mushroom Cream Soup,80,1 bowl
+Soups,Manchow Soup,80,1 bowl
+Soups,Pepper Soup,70,1 bowl
+Soups,Tomato Soup,70,1 bowl
+Chinese,Gobi Chilli,100,1 plate
+Chinese,Gobi Manchurian,100,1 plate
+Chinese,Veg Manchurian,100,1 plate
+Chinese,Paneer Manchurian,140,1 plate
+Chinese,Paneer Chilli,140,1 plate
+Chinese,Dragon Paneer,130,1 plate
+Chinese,Paneer Pepper Salt,140,1 plate
+Chinese,Hunan Paneer,140,1 plate
+Mushroom Varieties,Mushroom Chilli,110,1 plate
+Mushroom Varieties,Mushroom Manchurian,110,1 plate
+Mushroom Varieties,Mushroom Pepper Fry,120,1 plate
+Mushroom Varieties,Mushroom Masala,120,1 plate
+Mushroom Varieties,Kadai Mushroom,120,1 plate
+Mushroom Varieties,Chettinad Mushroom,120,1 plate
+Baby Corn Varieties,Baby Corn Chilli,110,1 plate
+Baby Corn Varieties,Baby Corn Manchurian,110,1 plate
+Baby Corn Varieties,Golden Baby Corn Fry,110,1 plate
+Baby Corn Varieties,Baby Corn Pepper Fry,120,1 plate
+Aloo Varieties,Aloo Chilli,70,1 plate
+Aloo Varieties,Aloo Pepper Fry,70,1 plate
+Aloo Varieties,French Fry,90,1 plate
+65 Varieties,Gobi 65,90,1 plate
+65 Varieties,Paneer 65,120,1 plate
+65 Varieties,Mushroom 65,100,1 plate
+65 Varieties,Baby Corn 65,100,1 plate
+Rolls,Veg Spring Roll,120,1 plate
+Rolls,Veg Frankie Roll,90,1 pc
+Rolls,Paneer Frankie Roll,120,1 pc
+Rolls,Mushroom Frankie Roll,80,1 pc
+Rolls,Gobi Frankie Roll,80,1 pc
+North Indian Dishes,North Indian Meals,160,1 thali
+North Indian Dishes,Paneer Butter Masala,160,1 plate
+North Indian Dishes,Kadai Paneer,160,1 plate
+North Indian Dishes,Shahi Paneer,160,1 plate
+North Indian Dishes,Paneer Malai Kofta,160,1 plate
+North Indian Dishes,Chettinad Paneer,150,1 plate
+North Indian Dishes,Hyderabad Paneer,150,1 plate
+North Indian Dishes,Paneer Punjabi,110,1 plate
+North Indian Dishes,Matar Paneer,110,1 plate
+North Indian Dishes,Veg Jaipuri,150,1 plate
+North Indian Dishes,Bhindi Masala,90,1 plate
+North Indian Dishes,Bhindi Fry,90,1 plate
+North Indian Dishes,Veg Jalfrezi,120,1 plate
+Vegetables Varieties,Kadai Vegetable,100,1 plate
+Vegetables Varieties,Mixed Veg Curry,100,1 plate
+Vegetables Varieties,Veg Kolhapuri,100,1 plate
+Vegetables Varieties,Veg Kofta,100,1 plate
+Vegetables Varieties,Aloo Gobi Masala,90,1 plate
+Vegetables Varieties,Green Peas Masala,90,1 plate
+Vegetables Varieties,Cashew And Peas Masala,140,1 plate
+Vegetables Varieties,Cashew Masala,160,1 plate
+Vegetables Varieties,Aloo Jeera,90,1 plate
+Vegetables Varieties,Stuffed Capsicum,110,1 plate
+Vegetables Varieties,Aloo Dum Banarasi,100,1 plate
+Vegetables Varieties,Punjabi Aloo,90,1 plate
+Palak Items,Palak Paneer,100,1 plate
+Palak Items,Palak Mushroom,100,1 plate
+Palak Items,Aloo Palak,90,1 plate
+Palak Items,Plain Palak,80,1 plate
+Palak Items,Palak Kofta,90,1 plate
+Chat Items,Samosa,20,1 pc
+Chat Items,Kachori,25,1 pc
+Chat Items,Cutlet,20,1 pc
+Chat Items,Veg Puffs,20,1 pc
+Chat Items,Mushroom Puffs,25,1 pc
+Chat Items,Poli,20,1 pc
+Chat Items,Channa Samosa,70,1 plate
+Chat Items,Channa Masala,55,1 plate
+Chat Items,Kachori Channa,70,1 plate
+Chat Items,Cutlet Channa,70,1 plate
+Chat Items,Bread Channa,70,1 plate
+Chat Items,Pav Bhaji,70,1 plate
+Chat Items,Cheese Pav Bhaji,80,1 plate
+Chat Items,Fried Pav Bhaji,80,1 plate
+Chat Items,Paneer Pav Bhaji,90,1 plate
+Chat Items,Mushroom Pav Bhaji,80,1 plate
+Chat Items,Kaju Pav Bhaji,90,1 plate
+Chat Items,Extra Bhaji,40,1 serving
+Chat Items,Extra Pav,40,1 serving
+Chat Items,Masala Puri,60,1 plate
+Chat Items,Bhel Puri,50,1 plate
+Chat Items,Sev Puri,60,1 plate
+Chat Items,Dahi Puri,70,1 plate
+Chat Items,Aloo Puri,70,1 plate
+Chat Items,Samosa Chat,70,1 plate
+Chat Items,Kachori Chat,70,1 plate
+Chat Items,Dahi Papadi Chat,80,1 plate
+Chat Items,Aloo Puri Chat,70,1 plate
+Chat Items,Katori Chat,70,1 plate
+Chat Items,Tokri Chat,75,1 plate
+Chat Items,Pani Puri,35,1 plate
+Chat Items,Mix Chat,70,1 plate
+Chat Items,Ther Mur Chat,60,1 plate
+Chat Items,Dahi Samosa,60,1 plate
+Chat Items,Veg Roll,20,1 pc
+Chat Items,Vada Pav,35,1 pc
+Chat Items,Raj Kachori,70,1 pc
+Chat Items,Fruit Bhel Puri,70,1 plate
+Sandwiches,Veg Cheese Sandwich,60,1 pc
+Sandwiches,Veg Sandwich,50,1 pc
+Sandwiches,Tomato Sandwich,50,1 pc
+Sandwiches,Cucumber Sandwich,50,1 pc
+Sandwiches,Chutney Sandwich,50,1 pc
+Sandwiches,Paneer Sandwich,60,1 pc
+Sandwiches,Cheese Chutney Sandwich,60,1 pc
+Sandwiches,Chilli Cheese Sandwich,60,1 pc
+Cool Drinks,Badam Milk,45,1 glass
+Cool Drinks,Rose Milk,35,1 glass
+Cool Drinks,Basundi,60,1 bowl
+Cool Drinks,Rasamalai,40,1 bowl
+Cool Drinks,Sweet Lassi,70,1 glass
+Cool Drinks,Salty And Sweet Lassi,70,1 glass
+Fresh Cream Cakes,Black Forest,40,1 slice
+Fresh Cream Cakes,White Forest,40,1 slice
+Fresh Cream Cakes,Choco Truffle,50,1 slice
+Fresh Cream Cakes,Ice Creams,50,1 scoop
+Fresh Cream Cakes,Milkshake,80,1 glass
+Fresh Cream Cakes,Gulab Jamun,25,1 pc
+Fresh Cream Cakes,Rasagulla,25,1 pc
+Fresh Juices,Sweet Lime,70,1 glass
+Fresh Juices,Orange,70,1 glass
+Fresh Juices,Apple,70,1 glass
+Fresh Juices,Pomegranate,70,1 glass
+Fresh Juices,Kirni Butter Fruit,60,1 glass
+Fresh Juices,Papaya,60,1 glass
+Fresh Juices,Pineapple,60,1 glass
+Fresh Juices,Grape,60,1 glass
+Fresh Juices,Carrot,60,1 glass
+Fresh Juices,Lemon,30,1 glass
+Fresh Juices,Lemon Ginger,40,1 glass
+Fresh Juices,Dates,70,1 glass
+Fresh Juices,Mango (seasonal),80,1 glass
+Fresh Juices,Fruit Falooda,100,1 glass
