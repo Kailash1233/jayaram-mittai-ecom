@@ -8,8 +8,9 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShoppingBag, Search, Sun, Moon, Phone, X, User } from 'lucide-react';
+import { ShoppingBag, Search, Sun, Moon, Phone, X, User, LogOut } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 
 interface EcommerceNavProps {
   searchQuery?: string;
@@ -25,7 +26,9 @@ export function EcommerceNav({
   onOpenAuth,
 }: EcommerceNavProps) {
   const { itemCount, openDrawer } = useCart();
+  const { isAuthenticated, session, logout } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
@@ -193,15 +196,45 @@ export function EcommerceNav({
           </button>
 
           {/* Customer Sign In / Profile Button */}
-          {onOpenAuth && (
-            <button
-              onClick={onOpenAuth}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 hover:bg-white/25 text-white font-bold text-xs transition-all hover:scale-105 active:scale-95 border border-white/20"
-              title="Customer Login / Sign Up"
-            >
-              <User className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Sign In</span>
-            </button>
+          {isAuthenticated ? (
+            <div className="relative">
+              <button
+                onClick={() => setIsProfileMenuOpen((prev) => !prev)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 hover:bg-white/25 text-white font-bold text-xs transition-all hover:scale-105 active:scale-95 border border-white/20"
+                title="Your account"
+              >
+                <User className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline font-mono">{session?.user.phone.slice(-10)}</span>
+              </button>
+              {isProfileMenuOpen && (
+                <div
+                  className="absolute right-0 top-full mt-2 w-44 bg-white dark:bg-[#1e1e24] rounded-xl shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150"
+                  onMouseLeave={() => setIsProfileMenuOpen(false)}
+                >
+                  <button
+                    onClick={() => {
+                      setIsProfileMenuOpen(false);
+                      logout();
+                    }}
+                    className="w-full flex items-center gap-2 px-4 py-3 text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <LogOut className="w-3.5 h-3.5 text-[#fe0000]" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            onOpenAuth && (
+              <button
+                onClick={onOpenAuth}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 hover:bg-white/25 text-white font-bold text-xs transition-all hover:scale-105 active:scale-95 border border-white/20"
+                title="Customer Login"
+              >
+                <User className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Sign In</span>
+              </button>
+            )
           )}
 
           {/* Cart Trigger Button */}
