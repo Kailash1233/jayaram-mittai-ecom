@@ -109,7 +109,7 @@ export default function OrderTrackingPage() {
           className={`w-16 h-16 rounded-full mx-auto flex items-center justify-center ${
             isCancelled || isUnpaid
               ? 'bg-red-50 dark:bg-red-950/40 text-[#fe0000]'
-              : 'bg-[#fff0f0] dark:bg-green-950/40 text-[#76e000]'
+              : 'bg-[#fff0f0] dark:bg-emerald-950/40 text-[#0f7a42]'
           }`}
         >
           {isCancelled || isUnpaid ? <AlertCircle className="w-10 h-10" /> : <CheckCircle2 className="w-10 h-10" />}
@@ -213,7 +213,7 @@ export default function OrderTrackingPage() {
             </div>
             <div className="flex justify-between">
               <span>Delivery Charge</span>
-              <span className={order.delivery_charge === 0 ? 'font-bold text-[#76e000]' : 'font-bold text-gray-900 dark:text-gray-100'}>
+              <span className={order.delivery_charge === 0 ? 'font-bold text-[#0f7a42]' : 'font-bold text-gray-900 dark:text-gray-100'}>
                 {order.delivery_charge === 0 ? 'FREE' : `₹${order.delivery_charge.toFixed(2)}`}
               </span>
             </div>

@@ -233,7 +233,7 @@ export function HeroSlideshow({ onOpenBookMenu, onSelectCategory }: HeroSlidesho
                 <div className="max-w-2xl space-y-5">
                   {/* Eyebrow badge */}
                   <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-xs font-extrabold uppercase tracking-widest text-[#ffe6e6]">
-                    <span className="w-2 h-2 rounded-full bg-[#76e000] animate-pulse"></span>
+                    <span className="w-2 h-2 rounded-full bg-[#0f7a42] animate-pulse"></span>
                     <span>{slide.eyebrow}</span>
                   </div>
 

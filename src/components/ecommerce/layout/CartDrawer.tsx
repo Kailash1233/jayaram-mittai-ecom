@@ -86,7 +86,7 @@ export function CartDrawer() {
                 Enter your delivery pincode below to see your delivery charge.
               </p>
             ) : calculation.isFreeDelivery ? (
-              <div className="flex items-center gap-2 text-xs font-bold text-[#76e000] dark:text-[#76e000]">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#0f7a42] dark:text-[#0f7a42]">
                 <span>🎉</span>
                 <span>You have unlocked FREE Delivery!</span>
               </div>
@@ -212,7 +212,7 @@ export function CartDrawer() {
                 </div>
                 {pincode.length === 6 && (
                   matchedZone ? (
-                    <p className="text-[11px] font-semibold text-[#76e000] pl-6">
+                    <p className="text-[11px] font-semibold text-[#0f7a42] pl-6">
                       Delivers to {matchedZone.location_name}
                     </p>
                   ) : (
@@ -235,7 +235,7 @@ export function CartDrawer() {
                   <span className="flex items-center gap-1">
                     Delivery Charge{matchedZone ? ` (${matchedZone.location_name})` : ''}
                   </span>
-                  <span className={calculation.isFreeDelivery ? 'font-bold text-[#76e000]' : 'font-semibold text-gray-900 dark:text-gray-100'}>
+                  <span className={calculation.isFreeDelivery ? 'font-bold text-[#0f7a42]' : 'font-semibold text-gray-900 dark:text-gray-100'}>
                     {!calculation.zoneMatched ? '—' : calculation.isFreeDelivery ? 'FREE' : `₹${calculation.deliveryCharge.toFixed(2)}`}
                   </span>
                 </div>
@@ -266,7 +266,7 @@ export function CartDrawer() {
               </Link>
 
               <div className="flex items-center justify-center gap-1.5 text-[10px] text-gray-400 text-center">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#76e000]" />
+                <ShieldCheck className="w-3.5 h-3.5 text-[#0f7a42]" />
                 <span>100% Vegetarian • Freshly Prepared • Secure Payment</span>
               </div>
             </div>

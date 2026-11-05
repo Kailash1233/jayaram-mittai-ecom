@@ -8,9 +8,16 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShoppingBag, Search, Sun, Moon, Phone, X, User, LogOut } from 'lucide-react';
+import { ShoppingBag, Search, Sun, Moon, Phone, X, User, LogOut, Bike, ChevronDown } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
+
+/** Real storefront links — update here if a branch's page moves or a new one goes live. */
+const ZOMATO_BRANCHES = [
+  { label: 'Nanganallur', url: 'https://www.zomato.com/chennai/jayaram-mittai-nanganallur/order' },
+  { label: 'Madipakkam', url: 'https://www.zomato.com/chennai/jayaram-mittai-madipakkam/order' },
+];
+const SWIGGY_URL = 'https://www.swiggy.com/city/chennai/jayaram-mittai-keelkattalai-ranga-nagar-rest963700';
 
 interface EcommerceNavProps {
   searchQuery?: string;
@@ -32,6 +39,7 @@ export function EcommerceNav({
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const [isZomatoMenuOpen, setIsZomatoMenuOpen] = useState(false);
 
   useEffect(() => {
     const isDark = document.documentElement.classList.contains('dark');
@@ -67,7 +75,7 @@ export function EcommerceNav({
       {!isScrolled && (
         <div className="bg-[#cc0000] text-xs font-medium py-1 px-4 text-center tracking-wide text-white/90 flex items-center justify-center gap-4 transition-all duration-300">
           <span className="flex items-center gap-1.5">
-            <span className="inline-block w-2 h-2 rounded-full bg-[#76e000] animate-pulse"></span>
+            <span className="inline-block w-2 h-2 rounded-full bg-[#0f7a42] animate-pulse"></span>
             <span>Since 1978 • Chromepet & Nanganallur, Chennai</span>
           </span>
           <span className="hidden sm:inline">•</span>
@@ -103,7 +111,7 @@ export function EcommerceNav({
         </Link>
 
         {/* Uniform Consistent Navigation Buttons Bar */}
-        <nav className="hidden lg:flex items-center gap-1.5 bg-black/10 dark:bg-white/5 p-1 rounded-full border border-white/15 backdrop-blur-md">
+        <nav className="hidden md:flex items-center gap-1.5 bg-black/10 dark:bg-white/5 p-1 rounded-full border border-white/15 backdrop-blur-md">
           <a
             href="#hero-slideshow"
             className="px-4 py-1.5 rounded-full text-xs font-bold text-white hover:bg-white/20 hover:text-white transition-all hover:scale-105 active:scale-95"
@@ -146,6 +154,51 @@ export function EcommerceNav({
 
         {/* Right Actions: Expanding Search Bar, Theme Toggle, Cart */}
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* Also order through Swiggy / Zomato */}
+          <div className="hidden md:flex items-center gap-1.5">
+            <a
+              href={SWIGGY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 text-white text-[11px] font-bold transition-colors border border-white/20"
+              title="Order on Swiggy"
+            >
+              <Bike className="w-3.5 h-3.5" />
+              <span className="hidden lg:inline">Swiggy</span>
+            </a>
+            <div className="relative">
+              <button
+                onClick={() => setIsZomatoMenuOpen((prev) => !prev)}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 text-white text-[11px] font-bold transition-colors border border-white/20"
+                title="Order on Zomato"
+              >
+                <Bike className="w-3.5 h-3.5" />
+                <span className="hidden lg:inline">Zomato</span>
+                <ChevronDown className="w-3 h-3" />
+              </button>
+              {isZomatoMenuOpen && (
+                <div
+                  className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-[#1e1e24] rounded-xl shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden z-10"
+                  onMouseLeave={() => setIsZomatoMenuOpen(false)}
+                >
+                  <p className="px-4 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-wide">Order on Zomato</p>
+                  {ZOMATO_BRANCHES.map((branch) => (
+                    <a
+                      key={branch.url}
+                      href={branch.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setIsZomatoMenuOpen(false)}
+                      className="block px-4 py-2.5 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    >
+                      {branch.label} branch
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Desktop Expanding Search Bar (Hover/Focus Expands) */}
           <div className="hidden md:block relative group">
             <div
@@ -280,34 +333,35 @@ export function EcommerceNav({
         </div>
       )}
 
-      {/* Mobile Sub-Navigation Bar — Uniform consistent buttons */}
+      {/* Mobile quick-actions row — just the essentials, not a shrunk copy of the desktop nav */}
       <div
-        className={`lg:hidden flex items-center gap-1.5 overflow-x-auto no-scrollbar px-3 py-1.5 border-t border-white/15 text-xs font-semibold text-white whitespace-nowrap transition-all duration-300 ${
+        className={`md:hidden flex items-center gap-1.5 px-3 py-1.5 border-t border-white/15 transition-all duration-300 ${
           isScrolled ? 'bg-[#cc0000]/80 backdrop-blur-xl' : 'bg-[#cc0000]'
         }`}
       >
-        <a href="#hero-slideshow" className="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 transition-all text-[11px] font-bold">
-          Home
-        </a>
-        <a href="#special-combos" className="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 transition-all text-[11px] font-bold">
-          Special Combos
-        </a>
-        <a href="#shop-menu" className="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 transition-all text-[11px] font-bold">
-          Categories
-        </a>
         {onOpenBookMenu && (
           <button
             onClick={onOpenBookMenu}
-            className="px-3 py-1 rounded-full bg-white/20 hover:bg-white/30 active:scale-95 font-bold transition-all text-[11px] border border-white/25"
+            className="px-3 py-1 rounded-full bg-white/20 hover:bg-white/30 active:scale-95 font-bold transition-all text-[11px] text-white border border-white/25"
           >
             Menu Card
           </button>
         )}
-        <a href="#about-story" className="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 transition-all text-[11px] font-bold">
-          Our Story
+        <a
+          href={SWIGGY_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1 px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 transition-all text-[11px] font-bold text-white"
+        >
+          <Bike className="w-3 h-3" /> Swiggy
         </a>
-        <a href="#contact" className="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 transition-all text-[11px] font-bold">
-          Contact
+        <a
+          href={ZOMATO_BRANCHES[0].url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1 px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 transition-all text-[11px] font-bold text-white"
+        >
+          <Bike className="w-3 h-3" /> Zomato
         </a>
       </div>
     </header>
