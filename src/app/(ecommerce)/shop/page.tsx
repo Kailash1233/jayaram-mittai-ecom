@@ -68,7 +68,7 @@ export default function ShopPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen pt-[96px] md:pt-[64px]">
+    <div className="flex flex-col min-h-screen pt-[96px] md:pt-[104px]">
       {/* Persistent Fixed Brand Nav with Navigation Buttons */}
       <EcommerceNav
         searchQuery={searchQuery}
