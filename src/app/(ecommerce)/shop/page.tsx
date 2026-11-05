@@ -12,11 +12,11 @@ import { SpecialCombosSection } from '@/components/ecommerce/catalog/SpecialComb
 import { AnimatedSearchBar } from '@/components/ecommerce/catalog/AnimatedSearchBar';
 import { ProductGrid } from '@/components/ecommerce/catalog/ProductGrid';
 import { BookMenuModal } from '@/components/ecommerce/catalog/BookMenuModal';
-import { CustomerAuthModal } from '@/components/ecommerce/auth/CustomerAuthModal';
 import { FloatingCartButton } from '@/components/ecommerce/layout/FloatingCartButton';
 import { useFlyingCart, FlyingCartOverlay } from '@/components/ecommerce/catalog/FlyingCartAnimation';
 import { getActiveCategories, getActiveProducts } from '@/lib/ecommerce/queries';
 import { JayaramMittaiCategory, JayaramMittaiProduct } from '@/lib/ecommerce/types';
+import { useAuth } from '@/context/AuthContext';
 import { Sparkles, Award, ShieldCheck, Heart } from 'lucide-react';
 
 export default function ShopPage() {
@@ -26,7 +26,7 @@ export default function ShopPage() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isBookMenuOpen, setIsBookMenuOpen] = useState<boolean>(false);
-  const [isAuthOpen, setIsAuthOpen] = useState<boolean>(false);
+  const { openAuthModal } = useAuth();
 
   const { triggerFly, flyingItems, toastMessage } = useFlyingCart();
   const shopMenuSectionRef = useRef<HTMLDivElement>(null);
@@ -79,7 +79,7 @@ export default function ShopPage() {
           }
         }}
         onOpenBookMenu={() => setIsBookMenuOpen(true)}
-        onOpenAuth={() => setIsAuthOpen(true)}
+        onOpenAuth={openAuthModal}
       />
 
       {/* Full-width Hero Video/Image Slideshow from left end to right */}
@@ -181,12 +181,6 @@ export default function ShopPage() {
         isOpen={isBookMenuOpen}
         onClose={() => setIsBookMenuOpen(false)}
         onItemAdded={(name, e) => triggerFly(name, e)}
-      />
-
-      {/* Non-intrusive Customer Login / Signup Modal */}
-      <CustomerAuthModal
-        isOpen={isAuthOpen}
-        onClose={() => setIsAuthOpen(false)}
       />
 
       {/* Floating Quick Cart Button on Scroll */}

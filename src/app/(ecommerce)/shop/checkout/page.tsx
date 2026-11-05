@@ -2,13 +2,15 @@
 
 // =============================================================================
 // JAYARAM MITTAI ECOMMERCE PLATFORM — CHECKOUT PAGE
-// Reference: Section 2, 4, 7 (Payment Priority), Section 14, 18 of "e commerce - master.md"
+// Creates the order via POST /api/orders/create, then opens Razorpay
+// Checkout with the backend-returned payment block and verifies the result
+// via POST /api/payments/razorpay/verify. Amounts/signatures are never
+// computed client-side — the backend is the sole authority.
 // =============================================================================
 
-import React, { useState, useId } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import {
   ArrowLeft,
   ShieldCheck,
@@ -17,30 +19,53 @@ import {
   Smartphone,
   Building,
   UtensilsCrossed,
-  CheckCircle2,
   Clock,
   AlertTriangle,
   ChevronDown,
+  LogIn,
 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 import { JayaramMittaiPaymentMethod } from '@/lib/ecommerce/types';
-import { SEED_DELIVERY_ZONES } from '@/lib/ecommerce/catalog-seed';
+import { createOrder, verifyRazorpayPayment } from '@/lib/api/orders';
+import { toE164 } from '@/lib/api/auth';
+import { ApiError } from '@/lib/api/client';
+import type { RazorpayCheckoutSuccessResponse } from '@/lib/api/shopTypes';
+
+const RAZORPAY_SCRIPT_SRC = 'https://checkout.razorpay.com/v1/checkout.js';
+
+function loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (typeof window === 'undefined') return resolve(false);
+    if ((window as any).Razorpay) return resolve(true);
+    const existing = document.querySelector(`script[src="${RAZORPAY_SCRIPT_SRC}"]`);
+    if (existing) {
+      existing.addEventListener('load', () => resolve(true));
+      existing.addEventListener('error', () => resolve(false));
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = RAZORPAY_SCRIPT_SRC;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, calculation, clearCart, selectedZone, setSelectedZone } = useCart();
+  const { items, calculation, clearCart, pincode, setPincode, matchedZone } = useCart();
+  const { isAuthenticated, session, openAuthModal } = useAuth();
 
   // Form State
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
   const [line1, setLine1] = useState('');
   const [line2, setLine2] = useState('');
   const [city, setCity] = useState('Chennai');
-  const [pincode, setPincode] = useState('600044');
   const [customerNotes, setCustomerNotes] = useState('');
 
-  // Payment State (Display priority strictly per Section 7)
+  // Payment State (Display priority strictly per the payment-methods spec)
   const [paymentMethod, setPaymentMethod] = useState<JayaramMittaiPaymentMethod>('upi');
   const [isSodexoExpanded, setIsSodexoExpanded] = useState(false);
 
@@ -48,14 +73,101 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Generate unique idempotency key for this checkout attempt
-  const [idempotencyKey] = useState(() => `idemp_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`);
+  // A fresh idempotency key per checkout attempt; the docs say re-use it on retry,
+  // which this does automatically since it only regenerates on mount.
+  const [idempotencyKey] = useState(() => crypto.randomUUID());
+
+  useEffect(() => {
+    loadRazorpayScript();
+  }, []);
+
+  // Prefill the phone field once we know who's signed in (still editable —
+  // the order's contact number doesn't have to match the login number).
+  useEffect(() => {
+    if (session?.user.phone && !phone) {
+      setPhone(session.user.phone.replace(/\D/g, '').slice(-10));
+    }
+  }, [session, phone]);
+
+  const razorpayMethodPrefill = useCallback((method: JayaramMittaiPaymentMethod) => {
+    switch (method) {
+      case 'debit_card':
+      case 'credit_card':
+        return { card: true };
+      case 'upi':
+        return { upi: true };
+      case 'net_banking':
+        return { netbanking: true };
+      case 'sodexo':
+        return { wallet: true };
+      default:
+        return undefined;
+    }
+  }, []);
+
+  const openRazorpayCheckout = useCallback(
+    async (orderNumber: string, orderId: string, payment: { keyId: string; razorpayOrderId: string; amount: number; currency: string }) => {
+      const loaded = await loadRazorpayScript();
+      if (!loaded || !(window as any).Razorpay) {
+        setErrorMessage('Could not load the payment window. Please check your connection and retry.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      const checkout = new (window as any).Razorpay({
+        key: payment.keyId,
+        order_id: payment.razorpayOrderId,
+        amount: payment.amount,
+        currency: payment.currency,
+        name: 'Jayaram Mittai',
+        description: orderNumber,
+        prefill: { name: fullName, contact: phone },
+        method: razorpayMethodPrefill(paymentMethod),
+        handler: async (response: RazorpayCheckoutSuccessResponse) => {
+          try {
+            const verifiedOrder = await verifyRazorpayPayment(response);
+            try {
+              sessionStorage.setItem(`jm_order_${verifiedOrder.id}`, JSON.stringify(verifiedOrder));
+            } catch {}
+            clearCart();
+            router.push(`/shop/orders/${verifiedOrder.id}`);
+          } catch (err) {
+            setErrorMessage(
+              err instanceof ApiError
+                ? err.message
+                : 'Payment was received but could not be confirmed. Please check Your Orders, or contact us.'
+            );
+            setIsSubmitting(false);
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setErrorMessage('Payment was not completed. Your order is saved — you can pay again below.');
+            setIsSubmitting(false);
+          },
+        },
+      });
+
+      checkout.on('payment.failed', (resp: any) => {
+        setErrorMessage(resp?.error?.description || 'Payment failed. Please try again.');
+        setIsSubmitting(false);
+      });
+
+      checkout.open();
+    },
+    [fullName, phone, paymentMethod, razorpayMethodPrefill, clearCart, router]
+  );
 
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
 
-    if (!fullName.trim() || !phone.trim() || !line1.trim() || !pincode.trim()) {
+    if (!isAuthenticated) {
+      openAuthModal();
+      return;
+    }
+
+    if (!fullName.trim() || !phone.trim() || !line1.trim() || pincode.length !== 6) {
       setErrorMessage('Please complete all required contact and delivery address fields.');
       return;
     }
@@ -65,57 +177,41 @@ export default function CheckoutPage() {
       return;
     }
 
+    if (!matchedZone) {
+      setErrorMessage(`Sorry, we don't deliver to pincode "${pincode}" yet.`);
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      const payload = {
-        customer: {
-          fullName: fullName.trim(),
-          phone: phone.trim(),
-          email: email.trim() || undefined,
-        },
+      const { order, payment } = await createOrder({
+        customer: { fullName: fullName.trim(), phone: toE164(phone) },
         address: {
           line1: line1.trim(),
           line2: line2.trim() || undefined,
           city: city.trim(),
-          pincode: pincode.trim(),
-          zoneId: selectedZone.id,
+          pincode,
         },
-        items: items.map((i) => ({
-          productId: i.product.id,
-          quantity: i.quantity,
-        })),
-        paymentMethod,
+        items: items.map((i) => ({ productId: i.product.id, quantity: i.quantity })),
         idempotencyKey,
         customerNotes: customerNotes.trim() || undefined,
-      };
-
-      const res = await fetch('/api/ecommerce/orders/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
+      try {
+        sessionStorage.setItem(`jm_order_${order.id}`, JSON.stringify(order));
+      } catch {}
 
-      if (!res.ok || data.error) {
-        setErrorMessage(data.error || 'Failed to place order. Please retry.');
-        setIsSubmitting(false);
+      if (!payment) {
+        // Already paid (e.g. a retried idempotent request) — go straight to confirmation.
+        clearCart();
+        router.push(`/shop/orders/${order.id}`);
         return;
       }
 
-      // Store in temporary session storage for order tracking preview
-      try {
-        sessionStorage.setItem(`jm_order_${data.order.id}`, JSON.stringify(data.order));
-      } catch {}
-
-      // Clear cart
-      clearCart();
-
-      // Navigate to order confirmation
-      router.push(`/shop/orders/${data.order.id}`);
-    } catch (err: any) {
-      setErrorMessage(err?.message || 'A network error occurred. Please try again.');
+      await openRazorpayCheckout(order.order_number, order.id, payment);
+    } catch (err) {
+      setErrorMessage(err instanceof ApiError ? err.message : 'Failed to place order. Please retry.');
       setIsSubmitting(false);
     }
   };
@@ -147,6 +243,21 @@ export default function CheckoutPage() {
           <span>Back to Menu</span>
         </Link>
       </div>
+
+      {!isAuthenticated && (
+        <div className="mb-6 p-4 rounded-2xl bg-[#fff0f0] dark:bg-red-950/30 border border-[#fcd4d4] dark:border-red-900/50 flex items-center justify-between gap-3 flex-wrap">
+          <p className="text-xs sm:text-sm font-semibold text-gray-800 dark:text-gray-200">
+            Sign in with your mobile number to place an order.
+          </p>
+          <button
+            onClick={openAuthModal}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#fe0000] hover:bg-[#cc0000] text-white font-bold text-xs shadow-sm transition-colors"
+          >
+            <LogIn className="w-3.5 h-3.5" />
+            <span>Sign In</span>
+          </button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
         {/* Left Column: Form Details */}
@@ -182,22 +293,11 @@ export default function CheckoutPage() {
                 <input
                   type="tel"
                   required
+                  inputMode="numeric"
+                  maxLength={10}
                   placeholder="e.g. 9840012345"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="w-full p-3 text-sm rounded-xl bg-[#f8f6f0] dark:bg-[#121214] border border-[#e8e4da] dark:border-[#2e2e38] focus:outline-none focus:ring-2 focus:ring-[#fe0000]"
-                />
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
-                  Email Address (optional)
-                </label>
-                <input
-                  type="email"
-                  placeholder="e.g. ramesh@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
                   className="w-full p-3 text-sm rounded-xl bg-[#f8f6f0] dark:bg-[#121214] border border-[#e8e4da] dark:border-[#2e2e38] focus:outline-none focus:ring-2 focus:ring-[#fe0000]"
                 />
               </div>
@@ -213,25 +313,32 @@ export default function CheckoutPage() {
               <span>Delivery Address</span>
             </h3>
 
-            {/* Delivery Zone Selector */}
-            <div className="bg-[#fff0f0] dark:bg-red-950/30 p-4 rounded-2xl border border-[#fcd4d4] dark:border-red-900/50">
-              <label className="block text-xs font-bold text-[#fe0000] mb-1.5 flex items-center gap-1.5">
-                <MapPin className="w-4 h-4" /> Select Your Delivery Area
+            {/* Pincode & Zone Match */}
+            <div className="bg-[#fff0f0] dark:bg-red-950/30 p-4 rounded-2xl border border-[#fcd4d4] dark:border-red-900/50 space-y-1.5">
+              <label className="block text-xs font-bold text-[#fe0000] mb-1 flex items-center gap-1.5">
+                <MapPin className="w-4 h-4" /> Delivery Pincode *
               </label>
-              <select
-                value={selectedZone.id}
-                onChange={(e) => {
-                  const zone = SEED_DELIVERY_ZONES.find((z) => z.id === e.target.value);
-                  if (zone) setSelectedZone(zone);
-                }}
+              <input
+                type="text"
+                required
+                inputMode="numeric"
+                maxLength={6}
+                placeholder="600043"
+                value={pincode}
+                onChange={(e) => setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                 className="w-full p-3 text-sm font-bold rounded-xl bg-white dark:bg-gray-900 border border-[#fcd4d4] dark:border-red-900/60 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#fe0000]"
-              >
-                {SEED_DELIVERY_ZONES.map((zone) => (
-                  <option key={zone.id} value={zone.id}>
-                    {zone.name} (~{zone.radius_km} km radius from kitchen)
-                  </option>
-                ))}
-              </select>
+              />
+              {pincode.length === 6 && (
+                matchedZone ? (
+                  <p className="text-xs font-semibold text-[#76e000]">
+                    Delivers to {matchedZone.location_name} — ₹{matchedZone.delivery_charge} delivery, free above ₹{matchedZone.free_delivery}
+                  </p>
+                ) : (
+                  <p className="text-xs font-semibold text-[#fe0000]">
+                    Sorry, we don't deliver to this pincode yet.
+                  </p>
+                )
+              )}
             </div>
 
             <div className="space-y-4">
@@ -249,8 +356,8 @@ export default function CheckoutPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="sm:col-span-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
                   <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
                     Landmark (optional)
                   </label>
@@ -263,7 +370,7 @@ export default function CheckoutPage() {
                   />
                 </div>
 
-                <div className="sm:col-span-1">
+                <div>
                   <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
                     City
                   </label>
@@ -272,20 +379,6 @@ export default function CheckoutPage() {
                     required
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
-                    className="w-full p-3 text-sm rounded-xl bg-[#f8f6f0] dark:bg-[#121214] border border-[#e8e4da] dark:border-[#2e2e38] focus:outline-none focus:ring-2 focus:ring-[#fe0000]"
-                  />
-                </div>
-
-                <div className="sm:col-span-1">
-                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
-                    Pincode *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="600044"
-                    value={pincode}
-                    onChange={(e) => setPincode(e.target.value)}
                     className="w-full p-3 text-sm rounded-xl bg-[#f8f6f0] dark:bg-[#121214] border border-[#e8e4da] dark:border-[#2e2e38] focus:outline-none focus:ring-2 focus:ring-[#fe0000]"
                   />
                 </div>
@@ -306,7 +399,7 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Section 3: Payment Method (Display priority strictly per Section 7) */}
+          {/* Section 3: Payment Method (Display priority strictly per the spec) */}
           <div className="bg-[#fffdfa] dark:bg-[#1e1e24] p-6 sm:p-7 rounded-3xl border border-[#e8e4da] dark:border-[#2e2e38] shadow-sm space-y-4">
             <h3 className="font-serif font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-[#fe0000] text-white text-xs font-bold flex items-center justify-center">
@@ -314,6 +407,9 @@ export default function CheckoutPage() {
               </span>
               <span>Payment Option</span>
             </h3>
+            <p className="text-[11px] text-gray-500 -mt-2">
+              Choose your preferred method below — you'll confirm it securely in the payment window.
+            </p>
 
             {/* Strict Display Priority: 1. Debit, 2. Credit, 3. UPI, 4. Net Banking, 5. Sodexo */}
             <div className="space-y-3">
@@ -419,7 +515,7 @@ export default function CheckoutPage() {
                 <span className="text-xs text-gray-500">50+ Banks</span>
               </label>
 
-              {/* 5. Sodexo (Displayed last, expandable per Section 7) */}
+              {/* 5. Sodexo (Displayed last, expandable) */}
               <div className="border border-[#e8e4da] dark:border-[#2e2e38] rounded-2xl overflow-hidden">
                 <button
                   type="button"
@@ -475,8 +571,9 @@ export default function CheckoutPage() {
           {/* Submit Button on Mobile */}
           <div className="lg:hidden">
             {errorMessage && (
-              <div className="p-4 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-xs rounded-2xl mb-4 border border-red-200">
-                {errorMessage}
+              <div className="p-4 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-xs rounded-2xl mb-4 border border-red-200 flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>{errorMessage}</span>
               </div>
             )}
 
@@ -485,7 +582,7 @@ export default function CheckoutPage() {
               disabled={isSubmitting}
               className="w-full py-4 rounded-full bg-[#fe0000] hover:bg-[#cc0000] text-white font-bold text-base shadow-lg disabled:opacity-50 transition-all hover:scale-[1.01]"
             >
-              {isSubmitting ? 'Verifying & Placing Order...' : `Place Order (₹${calculation.total.toFixed(2)})`}
+              {isSubmitting ? 'Processing...' : `Place Order (₹${calculation.total.toFixed(2)})`}
             </button>
           </div>
         </form>
@@ -504,7 +601,7 @@ export default function CheckoutPage() {
                   <div className="flex-1 pr-2">
                     <span className="font-bold text-gray-900 dark:text-gray-100">{product.name}</span>
                     <span className="text-gray-500 block text-[11px]">
-                      {quantity} × ₹{product.price} ({product.unit})
+                      {quantity} × ₹{product.price}
                     </span>
                   </div>
                   <span className="font-bold text-gray-900 dark:text-gray-100">
@@ -524,9 +621,9 @@ export default function CheckoutPage() {
               </div>
 
               <div className="flex justify-between items-center text-gray-600 dark:text-gray-400">
-                <span>Delivery Charge ({calculation.distanceKm} km)</span>
+                <span>Delivery Charge{matchedZone ? ` (${matchedZone.location_name})` : ''}</span>
                 <span className={calculation.isFreeDelivery ? 'font-bold text-[#76e000]' : 'font-semibold text-gray-900 dark:text-gray-100'}>
-                  {calculation.isFreeDelivery ? 'FREE' : `₹${calculation.deliveryCharge.toFixed(2)}`}
+                  {!calculation.zoneMatched ? 'Enter pincode' : calculation.isFreeDelivery ? 'FREE' : `₹${calculation.deliveryCharge.toFixed(2)}`}
                 </span>
               </div>
 
@@ -535,7 +632,7 @@ export default function CheckoutPage() {
                   <Clock className="w-3.5 h-3.5 text-gray-400" /> Estimated Time
                 </span>
                 <span className="font-medium text-gray-700 dark:text-gray-300">
-                  ~{calculation.estimatedHours} Hours
+                  {calculation.estimatedHours != null ? `~${calculation.estimatedHours} Hours` : '—'}
                 </span>
               </div>
 
@@ -549,8 +646,9 @@ export default function CheckoutPage() {
 
             {/* Error Message */}
             {errorMessage && (
-              <div className="p-3 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-xs rounded-xl border border-red-200">
-                {errorMessage}
+              <div className="p-3 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-xs rounded-xl border border-red-200 flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>{errorMessage}</span>
               </div>
             )}
 
@@ -561,11 +659,11 @@ export default function CheckoutPage() {
               className="hidden lg:flex w-full py-4 rounded-full bg-[#fe0000] hover:bg-[#cc0000] text-white font-bold text-base shadow-md hover:shadow-lg disabled:opacity-50 transition-all hover:scale-[1.02] items-center justify-center gap-2"
             >
               {isSubmitting ? (
-                <span>Placing Order...</span>
+                <span>Processing...</span>
+              ) : !isAuthenticated ? (
+                <span>Sign In to Continue</span>
               ) : (
-                <>
-                  <span>Confirm & Pay ₹{calculation.total.toFixed(2)}</span>
-                </>
+                <span>Confirm & Pay ₹{calculation.total.toFixed(2)}</span>
               )}
             </button>
 

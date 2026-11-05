@@ -217,21 +217,9 @@ export interface CartItem {
   quantity: number;
 }
 
-export interface CalculationResult {
-  subtotal: number;
-  deliveryCharge: number;
-  freeDeliveryThreshold: number;
-  isFreeDelivery: boolean;
-  distanceKm: number;
-  estimatedHours: number;
-  total: number;
-  operationalStatus: {
-    isOpen: boolean;
-    openTime: string;
-    closeTime: string;
-    message?: string;
-  };
-}
+// CalculationResult now lives in ./calculations.ts, next to the function that
+// produces it (its shape follows the real delivery-zone API, not this file's
+// older distance/operational-hours model).
 
 export interface ProductAvailabilityStatus {
   isAvailable: boolean;

@@ -1,8 +1,10 @@
 import React from 'react';
 import type { Metadata } from 'next';
+import { AuthProvider } from '@/context/AuthContext';
 import { CartProvider } from '@/context/CartContext';
 import { CartDrawer } from '@/components/ecommerce/layout/CartDrawer';
 import { EcommerceFooter } from '@/components/ecommerce/layout/EcommerceFooter';
+import { AuthModalMount } from '@/components/ecommerce/auth/AuthModalMount';
 // import '@/styles/ecommerce-tokens.css';
 
 export const metadata: Metadata = {
@@ -17,14 +19,17 @@ export default function ShopLayout({
   children: React.ReactNode;
 }) {
   return (
-    <CartProvider>
-      <div className="min-h-screen flex flex-col bg-[#f8f6f0] dark:bg-[#121214] text-[#1f2937] dark:text-[#f3f4f6] font-sans antialiased selection:bg-[#fe0000] selection:text-white">
-        <main className="flex-1">
-          {children}
-        </main>
-        <CartDrawer />
-        <EcommerceFooter />
-      </div>
-    </CartProvider>
+    <AuthProvider>
+      <CartProvider>
+        <div className="min-h-screen flex flex-col bg-[#f8f6f0] dark:bg-[#121214] text-[#1f2937] dark:text-[#f3f4f6] font-sans antialiased selection:bg-[#fe0000] selection:text-white">
+          <main className="flex-1">
+            {children}
+          </main>
+          <CartDrawer />
+          <AuthModalMount />
+          <EcommerceFooter />
+        </div>
+      </CartProvider>
+    </AuthProvider>
   );
 }

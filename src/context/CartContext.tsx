@@ -2,13 +2,15 @@
 
 // =============================================================================
 // JAYARAM MITTAI ECOMMERCE PLATFORM — SHOPPING CART CONTEXT
-// Reference: Section 1, 4, 18 of "e commerce - master.md"
+// Delivery zone is now resolved from the customer's pincode against the real
+// GET /api/deliveryzones list (zones are pincode-based, not radius/lat-lng).
 // =============================================================================
 
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
-import { CartItem, JayaramMittaiProduct, CalculationResult, JayaramMittaiDeliveryZone } from '@/lib/ecommerce/types';
-import { calculateCartTotals } from '@/lib/ecommerce/calculations';
-import { SEED_DELIVERY_ZONES } from '@/lib/ecommerce/catalog-seed';
+import { CartItem, JayaramMittaiProduct } from '@/lib/ecommerce/types';
+import { calculateCartTotals, CalculationResult } from '@/lib/ecommerce/calculations';
+import { getDeliveryZones, matchZoneByPincode } from '@/lib/api/deliveryZones';
+import type { ShopApiDeliveryZone } from '@/lib/api/shopTypes';
 
 interface CartContextType {
   items: CartItem[];
@@ -21,30 +23,35 @@ interface CartContextType {
   openDrawer: () => void;
   closeDrawer: () => void;
   toggleDrawer: () => void;
-  selectedZone: JayaramMittaiDeliveryZone;
-  setSelectedZone: (zone: JayaramMittaiDeliveryZone) => void;
+  /** All delivery zones the shop currently serves. */
+  zones: ShopApiDeliveryZone[];
+  /** The pincode the customer last entered (checkout or the mini zone-check widget). */
+  pincode: string;
+  setPincode: (pincode: string) => void;
+  /** The zone matching `pincode`, or null if nothing serves it (or none entered yet). */
+  matchedZone: ShopApiDeliveryZone | null;
   calculation: CalculationResult;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 const CART_STORAGE_KEY = 'jm_ecommerce_cart_v1';
+const PINCODE_STORAGE_KEY = 'jm_ecommerce_pincode_v1';
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [selectedZone, setSelectedZone] = useState<JayaramMittaiDeliveryZone>(
-    SEED_DELIVERY_ZONES[0]
-  );
+  const [zones, setZones] = useState<ShopApiDeliveryZone[]>([]);
+  const [pincode, setPincodeState] = useState('');
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Load cart from localStorage on mount
+  // Load cart + last-used pincode from localStorage on mount
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(CART_STORAGE_KEY);
-      if (stored) {
-        setItems(JSON.parse(stored));
-      }
+      const storedCart = localStorage.getItem(CART_STORAGE_KEY);
+      if (storedCart) setItems(JSON.parse(storedCart));
+      const storedPincode = localStorage.getItem(PINCODE_STORAGE_KEY);
+      if (storedPincode) setPincodeState(storedPincode);
     } catch {
       // Ignore parse error
     } finally {
@@ -52,7 +59,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Sync to localStorage
+  // Fetch the zone list once
+  useEffect(() => {
+    getDeliveryZones()
+      .then(setZones)
+      .catch(() => setZones([]));
+  }, []);
+
+  // Sync cart to localStorage
   useEffect(() => {
     if (!isLoaded) return;
     try {
@@ -61,6 +75,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       // Storage error
     }
   }, [items, isLoaded]);
+
+  const setPincode = useCallback((next: string) => {
+    setPincodeState(next);
+    try {
+      if (next) {
+        localStorage.setItem(PINCODE_STORAGE_KEY, next);
+      } else {
+        localStorage.removeItem(PINCODE_STORAGE_KEY);
+      }
+    } catch {
+      // Storage error
+    }
+  }, []);
 
   const addItem = useCallback((product: JayaramMittaiProduct, quantity = 1) => {
     setItems((prev) => {
@@ -85,9 +112,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     setItems((prev) =>
-      prev.map((item) =>
-        item.product.id === productId ? { ...item, quantity } : item
-      )
+      prev.map((item) => (item.product.id === productId ? { ...item, quantity } : item))
     );
   }, []);
 
@@ -99,15 +124,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const closeDrawer = useCallback(() => setIsDrawerOpen(false), []);
   const toggleDrawer = useCallback(() => setIsDrawerOpen((prev) => !prev), []);
 
-  const itemCount = useMemo(
-    () => items.reduce((sum, item) => sum + item.quantity, 0),
-    [items]
+  const itemCount = useMemo(() => items.reduce((sum, item) => sum + item.quantity, 0), [items]);
+
+  const matchedZone = useMemo(
+    () => (pincode && zones.length ? matchZoneByPincode(zones, pincode) : null),
+    [pincode, zones]
   );
 
-  const calculation = useMemo(() => {
-    const distance = selectedZone ? selectedZone.radius_km : 4.0;
-    return calculateCartTotals(items, distance);
-  }, [items, selectedZone]);
+  const calculation = useMemo(() => calculateCartTotals(items, matchedZone), [items, matchedZone]);
 
   return (
     <CartContext.Provider
@@ -122,8 +146,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         openDrawer,
         closeDrawer,
         toggleDrawer,
-        selectedZone,
-        setSelectedZone,
+        zones,
+        pincode,
+        setPincode,
+        matchedZone,
         calculation,
       }}
     >

@@ -8,9 +8,8 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight, ShieldCheck, MapPin, Clock } from 'lucide-react';
+import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight, ShieldCheck, MapPin, Clock, AlertCircle } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
-import { SEED_DELIVERY_ZONES } from '@/lib/ecommerce/catalog-seed';
 
 export function CartDrawer() {
   const {
@@ -21,21 +20,20 @@ export function CartDrawer() {
     removeItem,
     clearCart,
     calculation,
-    selectedZone,
-    setSelectedZone,
+    pincode,
+    setPincode,
+    matchedZone,
   } = useCart();
 
   if (!isDrawerOpen) return null;
 
-  const freeDeliveryProgress = Math.min(
-    100,
-    Math.round((calculation.subtotal / calculation.freeDeliveryThreshold) * 100)
-  );
+  const freeDeliveryProgress = calculation.zoneMatched
+    ? Math.min(100, Math.round((calculation.subtotal / calculation.freeDeliveryThreshold) * 100))
+    : 0;
 
-  const amountNeededForFreeDelivery = Math.max(
-    0,
-    calculation.freeDeliveryThreshold - calculation.subtotal
-  );
+  const amountNeededForFreeDelivery = calculation.zoneMatched
+    ? Math.max(0, calculation.freeDeliveryThreshold - calculation.subtotal)
+    : 0;
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
@@ -83,7 +81,11 @@ export function CartDrawer() {
 
           {/* Free Delivery Bar Banner */}
           <div className="bg-[#fff0f0] dark:bg-[#25252d] border-b border-[#fcd4d4] dark:border-[#2e2e38] px-6 py-3">
-            {calculation.isFreeDelivery ? (
+            {!calculation.zoneMatched ? (
+              <p className="text-xs font-semibold text-gray-600 dark:text-gray-400">
+                Enter your delivery pincode below to see your delivery charge.
+              </p>
+            ) : calculation.isFreeDelivery ? (
               <div className="flex items-center gap-2 text-xs font-bold text-[#76e000] dark:text-[#76e000]">
                 <span>🎉</span>
                 <span>You have unlocked FREE Delivery!</span>
@@ -193,26 +195,32 @@ export function CartDrawer() {
           {/* Footer & Checkout Summary */}
           {items.length > 0 && (
             <div className="border-t border-[#e8e4da] dark:border-[#2e2e38] bg-[#fcfbfa] dark:bg-[#1a1a1e] p-6 space-y-4 shadow-lg">
-              {/* Delivery Zone Selector */}
-              <div className="flex items-center justify-between text-xs bg-white dark:bg-[#25252d] p-2.5 rounded-xl border border-gray-200 dark:border-gray-700">
-                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                  <MapPin className="w-4 h-4 text-[#fe0000]" />
-                  <span>Deliver To:</span>
+              {/* Delivery Pincode Check */}
+              <div className="bg-white dark:bg-[#25252d] p-2.5 rounded-xl border border-gray-200 dark:border-gray-700 space-y-1.5">
+                <div className="flex items-center gap-2 text-xs">
+                  <MapPin className="w-4 h-4 text-[#fe0000] shrink-0" />
+                  <span className="text-gray-700 dark:text-gray-300 shrink-0">Deliver To:</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={6}
+                    value={pincode}
+                    onChange={(e) => setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    placeholder="Enter 6-digit pincode"
+                    className="flex-1 bg-transparent font-bold text-gray-900 dark:text-gray-100 focus:outline-none placeholder:font-normal placeholder:text-gray-400"
+                  />
                 </div>
-                <select
-                  value={selectedZone.id}
-                  onChange={(e) => {
-                    const zone = SEED_DELIVERY_ZONES.find((z) => z.id === e.target.value);
-                    if (zone) setSelectedZone(zone);
-                  }}
-                  className="bg-transparent font-bold text-gray-900 dark:text-gray-100 focus:outline-none cursor-pointer"
-                >
-                  {SEED_DELIVERY_ZONES.map((zone) => (
-                    <option key={zone.id} value={zone.id} className="dark:bg-gray-800">
-                      {zone.name} (~{zone.radius_km} km)
-                    </option>
-                  ))}
-                </select>
+                {pincode.length === 6 && (
+                  matchedZone ? (
+                    <p className="text-[11px] font-semibold text-[#76e000] pl-6">
+                      Delivers to {matchedZone.location_name}
+                    </p>
+                  ) : (
+                    <p className="text-[11px] font-semibold text-[#fe0000] flex items-center gap-1 pl-6">
+                      <AlertCircle className="w-3 h-3" /> Sorry, we don't deliver here yet
+                    </p>
+                  )
+                )}
               </div>
 
               {/* Price Breakdown */}
@@ -225,10 +233,10 @@ export function CartDrawer() {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="flex items-center gap-1">
-                    Delivery Charge ({calculation.distanceKm} km)
+                    Delivery Charge{matchedZone ? ` (${matchedZone.location_name})` : ''}
                   </span>
                   <span className={calculation.isFreeDelivery ? 'font-bold text-[#76e000]' : 'font-semibold text-gray-900 dark:text-gray-100'}>
-                    {calculation.isFreeDelivery ? 'FREE' : `₹${calculation.deliveryCharge.toFixed(2)}`}
+                    {!calculation.zoneMatched ? '—' : calculation.isFreeDelivery ? 'FREE' : `₹${calculation.deliveryCharge.toFixed(2)}`}
                   </span>
                 </div>
                 <div className="flex justify-between items-center text-gray-500">
@@ -236,7 +244,7 @@ export function CartDrawer() {
                     <Clock className="w-3.5 h-3.5 text-gray-400" /> Est. Delivery Time
                   </span>
                   <span className="font-medium text-gray-700 dark:text-gray-300">
-                    ~{calculation.estimatedHours} Hours
+                    {calculation.estimatedHours != null ? `~${calculation.estimatedHours} Hours` : '—'}
                   </span>
                 </div>
                 <div className="border-t border-gray-200 dark:border-gray-700 pt-2 flex justify-between text-sm font-bold text-gray-900 dark:text-gray-100">
