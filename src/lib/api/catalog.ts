@@ -35,10 +35,21 @@ function toProducts(group: ShopApiCategoryGroup): JayaramMittaiProduct[] {
     is_active: true,
     created_at: now,
     updated_at: now,
-    // availability / out_of_stock: the Shop API's product shape has no stock
-    // fields yet, so these stay undefined and evaluateProductAvailability()
-    // treats the item as always available. Revisit once the backend adds
-    // stock data to this response.
+    // `available` is absent only on an old backend build; treat that as
+    // available so the UI degrades gracefully rather than hiding everything.
+    out_of_stock:
+      p.available === false
+        ? {
+            id: p.product_id,
+            product_id: p.product_id,
+            is_out_of_stock: true,
+            out_of_stock_until: p.out_of_stock_until ?? null,
+            custom_message: p.stock_message ?? null,
+            set_by_admin_id: null,
+            created_at: now,
+            updated_at: now,
+          }
+        : undefined,
   }));
 }
 

@@ -5,12 +5,27 @@
 // and camelCase across objects).
 // =============================================================================
 
+/** The out-of-stock state machine's possible values. See the backend's `src/catalog/stock-state.ts`. */
+export type ShopApiStockState =
+  | 'in_stock'
+  | 'temporary_hold'
+  | 'needs_review'
+  | 'scheduled_hold'
+  | 'permanent_out_of_stock';
+
 export interface ShopApiProduct {
   product_id: string;
   name: string;
   price: number;
   image_url: string;
   description: string;
+  /** Resolved server-side; absent only on responses from an old backend build. */
+  stock_state?: ShopApiStockState;
+  out_of_stock_until?: string | null;
+  /** True only when stock_state is 'in_stock'. */
+  available?: boolean;
+  /** What to show the customer when `available` is false. */
+  stock_message?: string | null;
 }
 
 export interface ShopApiCategoryGroup {

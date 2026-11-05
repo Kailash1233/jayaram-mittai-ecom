@@ -51,10 +51,9 @@ export function calculateCartTotals(
 
 /**
  * Validates product availability (active, time window, and manual out-of-stock state).
- * The Shop API's catalog response currently carries no stock fields, so
- * `availability`/`out_of_stock` are undefined for live products and this
- * resolves to "available" — this only does real work once the backend adds
- * stock data to GET /api/catalog/products.
+ * `out_of_stock` is populated from the backend's resolved stock state
+ * (temporary/scheduled/permanent hold); `availability` (time-of-day windows)
+ * has no backend equivalent yet and stays undefined, resolving to "available".
  */
 export function evaluateProductAvailability(
   product: JayaramMittaiProduct
