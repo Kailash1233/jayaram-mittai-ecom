@@ -9,6 +9,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { X, Phone, CheckCircle2, ShieldCheck, AlertCircle, ArrowLeft, RotateCw } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { ApiError } from '@/lib/api/client';
@@ -203,10 +204,22 @@ export function CustomerAuthModal({ isOpen, onClose }: CustomerAuthModalProps) {
               {isSubmitting ? 'Sending Code...' : 'Send OTP on WhatsApp'}
             </button>
 
-            <div className="flex items-center justify-center gap-1.5 text-[10px] text-gray-400 pt-2 border-t border-gray-100 dark:border-gray-800">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#0f7a42]" />
+            <div className="flex items-center justify-center gap-1.5 text-[10px] text-gray-400">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#0f7a42] shrink-0" />
               <span>No password. No spam. Just your order updates.</span>
             </div>
+
+            <p className="text-center text-[10px] text-gray-400 pt-2 border-t border-gray-100 dark:border-gray-800 leading-relaxed">
+              By continuing, you agree to our{' '}
+              <Link href="/shop/terms" target="_blank" className="font-semibold text-gray-600 dark:text-gray-300 hover:text-[#fe0000] underline underline-offset-2">
+                Terms of Service
+              </Link>{' '}
+              and{' '}
+              <Link href="/shop/privacy" target="_blank" className="font-semibold text-gray-600 dark:text-gray-300 hover:text-[#fe0000] underline underline-offset-2">
+                Privacy Policy
+              </Link>
+              . We'll only use your number for order updates and our own offers — never sold or shared.
+            </p>
           </form>
         ) : (
           <form onSubmit={handleVerify} className="space-y-3.5">
