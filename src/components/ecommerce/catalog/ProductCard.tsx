@@ -41,55 +41,56 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
 
   return (
     <div className="group relative flex flex-col justify-between rounded-3xl bg-[#fffdfa] dark:bg-[#1e1e24] border border-[#e8e4da] dark:border-[#2e2e38] overflow-hidden shadow-sm hover:shadow-md hover:border-[#fcd4d4] dark:hover:border-red-900/50 transition-all duration-300">
-      {/* Product Image Container */}
-      <div className="relative w-full h-44 sm:h-48 bg-[#f9f4ec] dark:bg-[#25252d] overflow-hidden">
-        <Image
-          src={imgSrc}
-          alt={product.name}
-          fill
-          className={`object-cover transition-transform duration-500 group-hover:scale-105 ${
-            !availability.isAvailable ? 'grayscale opacity-70' : ''
-          }`}
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          onError={() =>
-            setImgSrc('/images/food/Rasamalai_plated_on_white_dish_202608251905.jpeg')
-          }
-        />
+      <Link href={`/shop/product/${product.id}`} className="block">
+        {/* Product Image Container */}
+        <div className="relative w-full h-44 sm:h-48 bg-[#f9f4ec] dark:bg-[#25252d] overflow-hidden">
+          <Image
+            src={imgSrc}
+            alt={product.name}
+            fill
+            className={`object-cover transition-transform duration-500 group-hover:scale-105 ${
+              !availability.isAvailable ? 'grayscale opacity-70' : ''
+            }`}
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            onError={() =>
+              setImgSrc('/images/food/Rasamalai_plated_on_white_dish_202608251905.jpeg')
+            }
+          />
 
-        {/* Brand Tag Badge */}
-        {availability.isAvailable && (
-          <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#fe0000] text-white text-[10px] font-extrabold uppercase tracking-wider shadow-sm">
-            {tagBadge}
-          </span>
-        )}
+          {/* Brand Tag Badge */}
+          {availability.isAvailable && (
+            <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#fe0000] text-white text-[10px] font-extrabold uppercase tracking-wider shadow-sm">
+              {tagBadge}
+            </span>
+          )}
 
-        {/* Out of Stock / Time Window Overlay Banner */}
-        {!availability.isAvailable && (
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] flex items-center justify-center p-3 text-center">
-            <div className="bg-white/95 dark:bg-gray-900/95 px-3 py-1.5 rounded-2xl shadow-lg border border-red-200">
-              <span className="text-xs font-bold text-[#fe0000] flex items-center justify-center gap-1">
-                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                {availability.customMessage || 'Unavailable'}
-              </span>
+          {/* Out of Stock / Time Window Overlay Banner */}
+          {!availability.isAvailable && (
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] flex items-center justify-center p-3 text-center">
+              <div className="bg-white/95 dark:bg-gray-900/95 px-3 py-1.5 rounded-2xl shadow-lg border border-red-200">
+                <span className="text-xs font-bold text-[#fe0000] flex items-center justify-center gap-1">
+                  <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                  {availability.customMessage || 'Unavailable'}
+                </span>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
 
-      {/* Card Content */}
-      <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
-        <div>
-          <div className="flex items-baseline justify-between gap-2 mb-1">
-            <h3 className="font-serif font-bold text-base sm:text-lg text-gray-900 dark:text-gray-100 line-clamp-1 group-hover:text-[#fe0000] transition-colors">
-              {product.name}
-            </h3>
-          </div>
+        {/* Card Content */}
+        <div className="px-4 sm:px-5 pt-4 sm:pt-5">
+          <h3 className="font-serif font-bold text-base sm:text-lg text-gray-900 dark:text-gray-100 line-clamp-1 group-hover:text-[#fe0000] transition-colors">
+            {product.name}
+          </h3>
 
           <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed mb-3">
             {product.description || 'Authentic traditional recipe prepared with fresh ingredients.'}
           </p>
         </div>
+      </Link>
 
+      {/* Pricing & Action Row (outside the link — buttons shouldn't navigate) */}
+      <div className="px-4 sm:px-5 pb-4 sm:pb-5 flex-1 flex flex-col justify-end">
         {/* Bottom Pricing & Action Row */}
         <div className="pt-2 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between gap-2">
           <div>

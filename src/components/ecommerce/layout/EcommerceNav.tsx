@@ -67,7 +67,7 @@ export function EcommerceNav({
       {!isScrolled && (
         <div className="bg-[#cc0000] text-xs font-medium py-1 px-4 text-center tracking-wide text-white/90 flex items-center justify-center gap-4 transition-all duration-300">
           <span className="flex items-center gap-1.5">
-            <span className="inline-block w-2 h-2 rounded-full bg-[#76e000] animate-pulse"></span>
+            <span className="inline-block w-2 h-2 rounded-full bg-[#0f7a42] animate-pulse"></span>
             <span>Since 1978 • Chromepet & Nanganallur, Chennai</span>
           </span>
           <span className="hidden sm:inline">•</span>

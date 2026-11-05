@@ -27,7 +27,8 @@ function joinMessage(message: unknown): string {
   return 'Something went wrong. Please try again.';
 }
 
-async function rawRequest<T>(path: string, options: RequestInit = {}, accessToken?: string): Promise<T> {
+/** Low-level proxy call, shared with the admin client (adminClient.ts) which attaches its own token. */
+export async function rawRequest<T>(path: string, options: RequestInit = {}, accessToken?: string): Promise<T> {
   const headers = new Headers(options.headers);
   headers.set('Content-Type', 'application/json');
   if (accessToken) headers.set('Authorization', `Bearer ${accessToken}`);

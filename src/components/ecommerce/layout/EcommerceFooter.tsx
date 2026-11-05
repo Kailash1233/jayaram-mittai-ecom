@@ -111,7 +111,7 @@ export function EcommerceFooter() {
               </div>
               <div className="p-3 bg-white/10 rounded-xl mt-3 space-y-1">
                 <div className="flex items-center gap-1.5 font-bold text-white text-[11px]">
-                  <ShieldCheck className="w-4 h-4 text-[#76e000]" />
+                  <ShieldCheck className="w-4 h-4 text-[#0f7a42]" />
                   <span>Safe & Secure Checkout</span>
                 </div>
                 <p className="text-[10px] text-[#ffe6e6]">

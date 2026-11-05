@@ -330,7 +330,7 @@ export default function CheckoutPage() {
               />
               {pincode.length === 6 && (
                 matchedZone ? (
-                  <p className="text-xs font-semibold text-[#76e000]">
+                  <p className="text-xs font-semibold text-[#0f7a42]">
                     Delivers to {matchedZone.location_name} — ₹{matchedZone.delivery_charge} delivery, free above ₹{matchedZone.free_delivery}
                   </p>
                 ) : (
@@ -485,7 +485,7 @@ export default function CheckoutPage() {
                     <span className="text-sm font-bold">3. UPI Instant Pay</span>
                   </div>
                 </div>
-                <span className="text-xs font-semibold text-[#76e000] bg-green-500/10 px-2 py-0.5 rounded-full">
+                <span className="text-xs font-semibold text-[#0f7a42] bg-emerald-500/10 px-2 py-0.5 rounded-full">
                   Fastest
                 </span>
               </label>
@@ -563,7 +563,7 @@ export default function CheckoutPage() {
             </div>
 
             <div className="text-[11px] text-gray-400 flex items-center gap-1.5 pt-1">
-              <ShieldCheck className="w-4 h-4 text-[#76e000] shrink-0" />
+              <ShieldCheck className="w-4 h-4 text-[#0f7a42] shrink-0" />
               <span>PCI-DSS compliant encrypted gateway. No raw card or bank credentials are ever stored.</span>
             </div>
           </div>
@@ -622,7 +622,7 @@ export default function CheckoutPage() {
 
               <div className="flex justify-between items-center text-gray-600 dark:text-gray-400">
                 <span>Delivery Charge{matchedZone ? ` (${matchedZone.location_name})` : ''}</span>
-                <span className={calculation.isFreeDelivery ? 'font-bold text-[#76e000]' : 'font-semibold text-gray-900 dark:text-gray-100'}>
+                <span className={calculation.isFreeDelivery ? 'font-bold text-[#0f7a42]' : 'font-semibold text-gray-900 dark:text-gray-100'}>
                   {!calculation.zoneMatched ? 'Enter pincode' : calculation.isFreeDelivery ? 'FREE' : `₹${calculation.deliveryCharge.toFixed(2)}`}
                 </span>
               </div>

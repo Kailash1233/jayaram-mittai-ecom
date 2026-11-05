@@ -43,7 +43,7 @@ export function HeroBanner({ onExploreClick }: { onExploreClick?: () => void }) 
             {/* Features Row */}
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-1 text-xs text-gray-600 dark:text-gray-400">
               <div className="flex items-center gap-1.5 font-medium">
-                <ShieldCheck className="w-4 h-4 text-[#76e000]" />
+                <ShieldCheck className="w-4 h-4 text-[#0f7a42]" />
                 <span>100% Pure Vegetarian</span>
               </div>
               <div className="flex items-center gap-1.5 font-medium">

@@ -159,8 +159,8 @@ export function CustomerAuthModal({ isOpen, onClose }: CustomerAuthModalProps) {
 
         {isSuccess ? (
           <div className="py-8 text-center space-y-3 animate-in zoom-in-90 duration-300">
-            <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-950/40 text-[#76e000] mx-auto flex items-center justify-center">
-              <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
+            <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-950/40 text-[#0f7a42] mx-auto flex items-center justify-center">
+              <CheckCircle2 className="w-10 h-10 text-emerald-700 dark:text-emerald-400" />
             </div>
             <h4 className="font-bold text-lg text-gray-900 dark:text-white">Signed In Successfully!</h4>
             <p className="text-xs text-gray-500">Welcome to Jayaram Mittai.</p>
@@ -204,7 +204,7 @@ export function CustomerAuthModal({ isOpen, onClose }: CustomerAuthModalProps) {
             </button>
 
             <div className="flex items-center justify-center gap-1.5 text-[10px] text-gray-400 pt-2 border-t border-gray-100 dark:border-gray-800">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#76e000]" />
+              <ShieldCheck className="w-3.5 h-3.5 text-[#0f7a42]" />
               <span>No password. No spam. Just your order updates.</span>
             </div>
           </form>

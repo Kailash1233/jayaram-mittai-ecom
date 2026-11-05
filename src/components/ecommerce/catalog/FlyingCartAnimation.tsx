@@ -107,7 +107,7 @@ export function FlyingCartOverlay({
       {/* Global Toast */}
       {toastMessage && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] bg-gray-900/95 text-white dark:bg-white dark:text-gray-900 px-6 py-3 rounded-full text-xs font-bold shadow-2xl border border-white/20 flex items-center gap-2 animate-in slide-in-from-bottom-5 duration-200">
-          <span className="w-2 h-2 rounded-full bg-[#76e000] animate-ping" />
+          <span className="w-2 h-2 rounded-full bg-[#0f7a42] animate-ping" />
           <span>{toastMessage}</span>
         </div>
       )}
