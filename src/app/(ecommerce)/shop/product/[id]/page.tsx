@@ -63,7 +63,7 @@ export default function ProductDetailPage() {
 
   if (product === undefined) {
     return (
-      <div className="min-h-screen pt-[96px] md:pt-[64px] flex items-center justify-center text-sm text-gray-400">
+      <div className="min-h-screen pt-[96px] md:pt-[104px] flex items-center justify-center text-sm text-gray-400">
         Loading…
       </div>
     );
@@ -71,7 +71,7 @@ export default function ProductDetailPage() {
 
   if (product === null) {
     return (
-      <div className="min-h-screen pt-[96px] md:pt-[64px] flex flex-col items-center justify-center gap-4 text-center px-4">
+      <div className="min-h-screen pt-[96px] md:pt-[104px] flex flex-col items-center justify-center gap-4 text-center px-4">
         <h1 className="font-serif font-bold text-2xl text-gray-900 dark:text-white">Item not found</h1>
         <p className="text-sm text-gray-500">This item may have been removed from the menu.</p>
         <Link href="/shop" className="px-5 py-2.5 rounded-full bg-[#fe0000] text-white text-sm font-bold">
@@ -86,7 +86,7 @@ export default function ProductDetailPage() {
   const quantity = cartItem ? cartItem.quantity : 0;
 
   return (
-    <div className="min-h-screen pt-[96px] md:pt-[64px] pb-16">
+    <div className="min-h-screen pt-[96px] md:pt-[104px] pb-16">
       <EcommerceNav onOpenAuth={openAuthModal} />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
